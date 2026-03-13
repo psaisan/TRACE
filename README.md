@@ -383,3 +383,163 @@ The paper and code emphasize the following safeguards:
 - separation of translator training from downstream label evaluation
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TRACE
+**Translator Representation Analysis of Ceilings and Efficiency**
+
+Official companion repository for the paper:
+
+**H&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings**  
+**Payam Saisan, Sandip Pravin Patel**  
+**bioRxiv** *(link coming soon)*
+
+---
+
+## Overview
+
+TRACE is a simulation and analysis toolkit for studying a specific computational question in biomarker discovery:
+
+> When can a translator learned from paired data improve downstream prediction under limited labeled data, even though deterministic translation cannot create new deployment-time information?
+
+The central claim studied in this repository is that a frozen translator  
+$\hat{Z} = h(X)$  
+can improve **finite-sample learnability** by reorganizing existing information into a more learnable representation, while still respecting the information-theoretic ceiling imposed by the deployable input representation $X$.
+
+This repository contains the code used to generate the simulation results, figures, and summary analyses described in the paper.
+
+---
+
+## Table of Contents
+
+- [Conceptual Setting](#conceptual-setting)
+- [Simulation Objects and Notation](#simulation-objects-and-notation)
+- [Analytical Flow](#analytical-flow)
+- [Linear Benchmark](#linear-benchmark)
+- [Nonlinear Benchmark](#nonlinear-benchmark)
+- [Nonlinear Sweep Families](#nonlinear-sweep-families)
+- [Summary Metrics](#summary-metrics)
+- [Threat Models and Failure Modes](#threat-models-and-failure-modes)
+- [Repository Structure](#repository-structure)
+- [Getting Started](#getting-started)
+- [Citation](#citation)
+- [License](#license)
+
+---
+
+## Conceptual Setting
+
+The TRACE simulations are intentionally synthetic and minimal. They do **not** attempt to model histology realism, patch aggregation, or multiple-instance learning directly. Instead, they isolate one computational mechanism:
+
+- a translator is learned from paired samples $(X, Z^\star)$
+- the translator is frozen
+- downstream prediction is then compared using:
+  - raw deployable features $X$
+  - translated features $\hat{Z} = h(X)$
+
+Because $\hat{Z}$ is deterministic in $X$ after translator training:
+
+- $I(Y; \hat{Z}) \le I(Y; X)$
+- $\mathrm{AUC}^*(\hat{Z}) \le \mathrm{AUC}^*(X)$
+
+Accordingly, any observed regime in which prediction from $\hat{Z}$ exceeds prediction from $X$ must be interpreted as a **finite-sample learnability effect**, not as the creation of new deployment-time signal.
+
+---
+
+## Simulation Objects and Notation
+
+Each simulated sample contains four objects:
+
+- $Y \in \{0,1\}$: the downstream target label
+- $B \in \mathbb{R}^m$: an unobserved latent biological state
+- $Z^\star \in \mathbb{R}^p$: a paired biological modality used only during translator training
+- $X \in \mathbb{R}^d$: the deployable feature vector available at inference
+
+The roles of these objects are:
+
+- **$B$** is latent biology
+- **$Z^\star$** is a comparatively biology-aligned paired target representation
+- **$X$** is the deployable representation seen at inference time
+- **$h$** is a translator learned from paired data
+- **$\hat{Z} = h(X)$** is the frozen translated representation used downstream
+
+In the motivating pathology interpretation:
+
+- $X$ stands in for a deployable morphology-derived feature representation
+- $Z^\star$ stands in for a more directly biology-aligned paired modality
+- the downstream goal is prediction of $Y$ under limited labeled samples
+
+---
+
+## Analytical Flow
+
+The simulation framework follows the same logic as the paper.
+
+### 1. Information-theoretic sanity checks
+
+The first stage verifies that deterministic translation respects the data-processing inequality and does not raise the Bayes-optimal deployment ceiling.
+
+### 2. Linear-Gaussian benchmark
+
+The second stage studies a fully controlled linear setting in which nuisance, dimensionality, and asymptotic ceiling can be characterized analytically.
+
+### 3. Nonlinear latent-world benchmark
+
+The third stage extends the framework to a nonlinear world in which:
+
+- labels arise from nonlinear latent biology
+- the paired modality remains relatively aligned with the target
+- the deployable representation is more distorted and nuisance-entangled
+
+This creates a regime in which $\hat{Z}$ can be useful at low label budgets but lossy at large sample sizes.
+
+### 4. Robustness sweeps and compact summaries
+
+The fourth stage tests robustness across structured nonlinear sweep families and summarizes results with compact scalar metrics such as low-label gain, crossover sample size, and tail-gap estimates.
+
+---
+
+## Linear Benchmark
+
+The linear benchmark is the analytically tractable core of TRACE.
+
+### Latent biology and labels
+
+A balanced latent class variable $s \in \{-1,+1\}$ is sampled, and the downstream target is defined by
+
+```math
+Y = \frac{s+1}{2}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
