@@ -6,8 +6,7 @@
 <img src="Images/Trace2.png"  style="border: 0;"/>
 
 
-# TRACE
-**Translator Representation Analysis of Ceilings and Efficiency**
+# TRACE (Translator Representation Analysis of Ceilings and Efficiency**
 
 TRACE is a simulation and analysis toolkit for studying when translator-derived proxy representations improve finite-sample biomarker prediction under conserved information ceilings.
 
