@@ -3,7 +3,10 @@
 
 ##
 
-<img src="Images/Trace2.png"  style="border: 0;"/>
+<div align="center">
+  <img src="Images/Trace2.png" alt="Description of image">
+</div>
+ 
 
 
 # TRACE (Translator Representation Analysis of Ceilings and Efficiency**
