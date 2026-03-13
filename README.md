@@ -7,7 +7,7 @@
   <img src="Images/Trace2.png" alt="Description of image">
 </div>
  
-
+##
 
 # TRACE (Translator Representation Analysis of Ceilings and Efficiency**
 
