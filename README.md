@@ -1,6 +1,11 @@
 
 <img src="Images/Trace1.png"  style="border: 0;"/>
 
+##
+
+<img src="Images/Trace2.png"  style="border: 0;"/>
+
+
 # TRACE
 **Translator Representation Analysis of Ceilings and Efficiency**
 
