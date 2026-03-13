@@ -1,4 +1,23 @@
-# translator-toolkit
+
+<img src="Images/trace1.PNG"  style="border: 0;"/>
+
+# TRACE
+**Translator Representation Analysis of Ceilings and Efficiency**
+
+TRACE is a simulation and analysis toolkit for studying when translator-derived proxy representations improve finite-sample biomarker prediction under conserved information ceilings.
+
+
+
+For more information, see our paper:
+
+**H&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings**  
+Payam Saisan, Sandip Pravin Patel  
+**bioRxiv** *(link coming soon)*
+
+This repository contains the code used to generate the simulation results, figures, and supporting analyses described in the paper.
+
+---
+
 
 A cleaned first-pass package that consolidates the notebook code into a reusable toolkit.
 
@@ -82,36 +101,5 @@ curves = {spec["key"]: compute_learning_curve_auc_vs_n_nonlinear(**spec["params"
 summary_df = summarize_many_curves(curves)
 ```
 
-## Consolidation choices
 
-The biggest normalization choice is the nonlinear regime.
 
-Your notebook history showed at least three incompatible nonlinear branches:
-
-1. random-feature translator branch
-2. ridge-only nonlinear branch
-3. patched branches with `label_flip_prob`, `label_temperature`, and changing `sample_world_nonlinear` signatures
-
-This toolkit keeps a **single coherent nonlinear world** with:
-
-- `latent_axis_strength`
-- `label_temperature`
-- optional translator choice: `translator="ridge"` or `translator="rff"`
-
-That avoids the notebook-state mismatch that caused the `KeyError` and `unexpected keyword argument` failures.
-
-## What I did **not** assume
-
-I did **not** assume every late notebook patch was correct. Where versions conflicted, I chose the more internally consistent implementation rather than trying to preserve every transient branch.
-
-So this is best treated as a **clean base toolkit**, not a guaranteed perfect reproduction of every notebook output.
-
-## Suggested next step
-
-If you want, the next useful refinement is to turn this into a **paper-facing toolkit** with:
-
-- one `paper_figures.py` driver
-- one `supplementary_figures.py` driver
-- YAML or JSON config files for all published runs
-- deterministic seed registry
-- cached `.npz` outputs so expensive sweeps do not rerun every time
