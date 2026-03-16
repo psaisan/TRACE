@@ -1,281 +1,118 @@
-TRACE
+# **TRACE** : (**T**ranslation-based **R**epresentation **A**dvantage **C**haracterization and **E**valuation)
 
-Toolkit for Representation Advantage Diagnostics via ARC
+A minmalistic diagnostic tool for deciding **when a translated representation (h(X)) is actually useful for prediction compared to the original deployable representation (X).**
 
-TRACE is a lightweight diagnostic toolkit for analyzing learning efficiency in representation-based biomarker prediction systems.
+TRACE implements the **Advantage Representation Curve (ARC)** introduced in the accompanying manuscript.
 
-It implements the Advantage Representation Curve (ARC) introduced in the accompanying manuscript and provides practical diagnostics for evaluating whether a translated representation $h(X)$ provides meaningful advantages over a deployable representation $X$.
+The goal is simple:
 
-Rather than evaluating models at a single training size, TRACE analyzes learning curves as functions of label budget, allowing practitioners to distinguish between:
-
-representation-driven gains
-
-sample-efficiency improvements
-
-diminishing returns from additional labels
-
-
+If a model trained on (h(X)) beats a model trained on (X), TRACE determines **whether that gain is real and persistent vs. a data artifact.**
 
 ---
 
-Conceptual Overview
+# The problem TRACE solves
 
-In most biomarker studies, predictive performance is summarized by a single endpoint metric such as ROC–AUC.
+In many biomarker pipelines we start with deployable features such as
 
-TRACE instead treats predictive performance as a function of labeled training size.
+* H&E slide embeddings
+* pathology foundation-model tokens
+* morphological features
+* imaging representations
+
+and then build a **translator**
+
+```
+X  →  h(X)
+```
+
+Examples
+
+| X (deployable)      | h(X) (translated)           |
+| ------------------- | --------------------------- |
+| H&E embeddings      | predicted gene expression   |
+| H&E embeddings      | predicted proteomics        |
+| H&E embeddings      | predicted immune signatures |
+| morphology features | predicted pathway activity  |
+
+Researchers often observe
+
+```
+model(h(X)) > model(X)
+```
+
+But a single benchmark AUC cannot answer the critical question:
+
+**Is the translated representation actually better, or does it only help when labels are scarce?**
+
+TRACE answers this using **learning curves across label budgets.**
+
+---
+
+# Core idea: the Advantage Representation Curve
 
 Let
 
+```
 A_X(n) = AUC(n, X)
-
 A_H(n) = AUC(n, h(X))
+```
 
 where
 
-$X$ is a deployable representation
+* (X) = deployable representation
+* (h(X)) = translated representation
+* (n) = number of labeled training samples
 
-$h(X)$ is a translated representation
+TRACE computes
 
-$n$ is the number of labeled training samples
+```
+ARC(n) = A_H(n) − A_X(n)
+```
 
-
-The central observable is the Advantage Representation Curve (ARC)
-
-ARC(n) = A_H(n) - A_X(n)
-
-ARC measures the downstream predictive advantage of the translated representation as a function of label budget.
-
-The ARC corresponds to the vertical separation between learning curves for models trained on $X$ and $h(X)$.
-
+The **shape of ARC** reveals why translation appears to help.
 
 ---
 
-What TRACE Does
+# What TRACE tells you
 
-TRACE estimates learning curves and computes ARC-based diagnostics that help determine whether gains from a translated representation are due to:
+| ARC pattern                           | Interpretation                         | Action            |
+| ------------------------------------- | -------------------------------------- | --------------------------- |
+| large ARC at small n, shrinking later | translation improves sample efficiency | collect more labels         |
+| ARC remains positive across n         | representation truly helps             | improve translator          |
+| ARC ≈ 0                               | translation adds little value          | use original representation |
+| curves flatten                        | diminishing returns                    | rethink representation      |
 
-improved statistical efficiency
-
-improved representation geometry
-
-or simply additional labels
-
-
-TRACE converts empirical learning curves into decision-oriented summaries.
-
+TRACE converts learning curves into **actionable modeling decisions.**
 
 ---
 
-Inputs
+# Typical user workflow
 
-TRACE operates on representations, not raw imaging data.
+You already have
 
-A typical workflow begins after feature extraction or representation learning.
+```
+X : deployable features
+H : translated features h(X)
+Y : labels
+```
 
+Example:
 
----
+```
+X = H&E embeddings
+H = predicted gene expression
+Y = mutation status
+```
 
-Deployable representation $X$
+Run TRACE:
 
-A feature matrix derived from deployable data.
-
-Examples include
-
-H&E image embeddings
-
-histology patch features
-
-pathology foundation-model tokens
-
-morphological features
-
-spatial transcriptomics embeddings
-
-any deployable model input representation
-
-
-Shape
-
-X : (N_samples × D_features)
-
-
----
-
-Translated representation $h(X)$
-
-A representation obtained from a translator model applied to $X$.
-
-Examples
-
-predicted gene expression from H&E
-
-predicted proteomic profiles
-
-cross-modal embeddings
-
-predicted molecular states
-
-
-Shape
-
-H = h(X) : (N_samples × P_features)
-
-
----
-
-Target labels $Y$
-
-A supervised prediction target.
-
-Examples
-
-mutation status
-
-disease subtype
-
-response class
-
-survival bin
-
-clinical phenotype
-
-
-Shape
-
-Y : (N_samples,)
-
-
----
-
-Label-budget grid
-
-A set of training sizes used to estimate learning curves.
-
-Example
-
-n_grid = [50, 100, 200, 500, 1000, 2000]
-
-
----
-
-TRACE Workflow
-
-The TRACE pipeline proceeds in four stages.
-
-
----
-
-1. Estimate Learning Curves
-
-TRACE trains downstream predictive models using increasing label budgets.
-
-For each training size $n$
-
-sample $n$ labeled examples
-
-train model on representation $X$
-
-train model on representation $h(X)$
-
-evaluate AUC on held-out test data
-
-
-This produces the learning curves
-
-A_X(n)
-
-A_H(n)
-
-
----
-
-2. Compute ARC
-
-TRACE computes the Advantage Representation Curve
-
-ARC(n) = A_H(n) - A_X(n)
-
-Interpretation
-
-ARC(n) Meaning
-
-> 0 translation helps
-≈ 0 little difference
-< 0 translation hurts
-
-
-But the shape of ARC across n contains the real information.
-
-
----
-
-3. Extract ARC Diagnostics
-
-TRACE summarizes the ARC using several compact metrics.
-
-Low-label advantage
-
-Average ARC over small label budgets.
-
-ARC_low
-
-Measures whether translation improves sample efficiency.
-
-
----
-
-Crossover estimate
-
-Approximate label count where the advantage disappears.
-
-n_cross
-
-Indicates when direct learning from $X$ may catch up.
-
-
----
-
-Integrated ARC
-
-Total advantage across the practical label range.
-
-ARC_int
-
-Measures the overall value of translation.
-
-
----
-
-Plateau heuristic
-
-A heuristic based on learning-curve flattening.
-
-Identifies regimes where additional labels may yield diminishing returns.
-
-
----
-
-Decision Interpretation
-
-ARC pattern Interpretation Suggested action
-
-Large early ARC, early crossover translation improves sample efficiency collect more labels
-Persistent positive ARC representation quality matters improve translator
-ARC ≈ 0 little benefit from translation focus on direct modeling
-Curves flatten while ARC shrinks diminishing returns consider alternative representations
-
-
-
----
-
-Minimal Example
-
+```python
 import trace
 
 report = trace.run(
-    X=X_features,
-    H=translated_features,
-    y=labels,
+    X=X,
+    H=H,
+    y=Y,
     n_grid=[50,100,200,500,1000],
     model="logistic"
 )
@@ -283,53 +120,159 @@ report = trace.run(
 report.plot_learning_curves()
 report.plot_arc()
 report.summary()
+```
 
+TRACE outputs
 
----
-
-Outputs
-
-TRACE produces
-
+```
 learning_curves.png
 arc_curve.png
 trace_summary.json
 trace_report.txt
-
-
----
-
-Scope
-
-TRACE is a diagnostic toolkit, not a model-training framework.
-
-It does not
-
-train translators
-
-determine true modality information ceilings
-
-infer causal biological mechanisms
-
-
-Instead, TRACE provides learning-curve diagnostics that help practitioners understand when representation translation meaningfully improves predictive modeling.
-
+```
 
 ---
 
-Repository Structure
+# Example interpretation
 
+Learning curves
+
+```
+AUC
+0.9 |        H
+    |       /
+0.8 |      /
+    |     /
+0.7 |    /
+    |   /
+0.6 |  / X
+    +----------------
+       label budget
+```
+
+ARC
+
+```
+ARC
+0.15 |\
+     | \
+0.10 |  \
+     |   \
+0.05 |    \
+     +-----\-----------
+           label budget
+```
+
+Interpretation
+
+```
+translation helps when labels are scarce
+direct learning on X catches up with more data
+```
+
+Decision
+
+```
+if labels are scarce → use translation
+if labels are plentiful → direct modeling may suffice
+```
+
+---
+
+# Minimal toy example
+
+Synthetic scenario:
+
+* latent biological signal
+* deployable representation with nuisance variation
+* translated representation that suppresses nuisance
+
+```python
+import numpy as np
+import trace
+
+N = 4000
+d = 30
+
+rng = np.random.default_rng(0)
+
+z = rng.normal(size=(N,1))
+y = (z[:,0] > 0).astype(int)
+
+nuisance = rng.normal(scale=2.0,size=(N,d))
+
+X = z @ rng.normal(size=(1,d)) + nuisance + rng.normal(size=(N,d))
+H = z @ rng.normal(size=(1,8)) + 0.5*rng.normal(size=(N,8))
+
+report = trace.run(X=X,H=H,y=y,n_grid=[50,100,200,500,1000])
+```
+
+This toy example typically produces a **large ARC at small label budgets that shrinks as data grows**, illustrating a **finite-sample learnability advantage**.
+
+---
+
+# Installation
+
+```
+pip install trace-diagnostics
+```
+
+or
+
+```
+git clone https://github.com/yourname/TRACE
+cd TRACE
+pip install -e .
+```
+
+---
+
+# Repository structure
+
+```
 trace/
     learning_curves.py
     arc.py
     diagnostics.py
     plotting.py
     workflow.py
+
 examples/
     toy_simulation.ipynb
-README.md
-
+```
 
 ---
 
-3. Commit the README
+# What TRACE is (and is not)
+
+TRACE **is**
+
+* a representation-advantage diagnostic
+* a learning-curve analysis tool
+* a decision aid for choosing between (X) and (h(X))
+
+TRACE **is not**
+
+* a translator training framework
+* a causal inference tool
+* a theoretical estimator of information limits
+
+Its purpose is practical:
+
+> Given (X) and (h(X)), determine whether using (h(X)) is actually worth it.
+
+---
+
+# Relationship to the paper
+
+The accompanying manuscript introduces the theoretical framework explaining why translated representations can improve finite-sample learnability without increasing deployment-time information.
+
+TRACE is the **executable diagnostic implementation** of that framework.
+
+---
+
+# License
+
+MIT License
+
+
