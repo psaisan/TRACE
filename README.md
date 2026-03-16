@@ -9,8 +9,16 @@
 
 ##
 
-# TRACE  
-**T**ranslator **R**epresentation **A**nalysis of **C**eilings and **E**fficiency
+
+
+
+# **TRACE** : (**T**ranslation-based **R**epresentation **A**dvantage **C**haracterization and **E**valuation)
+
+A minmalistic diagnostic tool for deciding **when a translated representation (h(X)) is actually useful for prediction compared to the original deployable representation (X).**
+
+TRACE implements the **Advantage Representation Curve (ARC)** introduced in the accompanying manuscript.
+
+---
 
 TRACE is the **official companion repository** for the paper:
 
