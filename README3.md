@@ -88,3 +88,163 @@ Many biomarker pipelines now take the form
 
 ```text
 deployable representation X  ->  translator  ->  translated representation h(X)
+
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/psaisan/TRACE
+cd TRACE
+```
+
+Create and activate a Python environment, then install the repository in editable mode:
+
+```bash
+pip install -e .
+```
+
+This is the most convenient setup for running the notebooks, examples, and local development code from the repository root.
+
+## Important naming note
+
+Python already includes a standard-library module named `trace`. Because this repository also uses `trace/` as a package name, import behavior can depend on how Python is launched and what is on the path.
+
+The most reliable ways to work with this repository are:
+
+- run notebooks from the repository root;
+- run scripts from the repository root after local installation;
+- prefer the notebook examples in `Notebooks/` as the authoritative entry point.
+
+If you encounter an import collision with the Python standard-library `trace` module, first check that you are launching from the project root and that the local package has been installed with `pip install -e .`.
+
+# Where to start
+
+The recommended entry point is the notebook sequence in `Notebooks/`.
+
+## Recommended order
+
+1. `Notebooks/00_overview_and_reference_scenarios.ipynb`  
+   Overview of TRACE outputs and reference synthetic scenarios.
+
+2. `Notebooks/01_sample_efficiency.ipynb`  
+   Positive low-label ARC that decays toward zero.
+
+3. `Notebooks/02_persistent_advantage.ipynb`  
+   Sustained positive ARC across label budgets.
+
+4. `Notebooks/03_no_advantage.ipynb`  
+   Near-null ARC.
+
+5. `Notebooks/04_lossy_translation.ipynb`  
+   Negative ARC / failure regime.
+
+6. `Notebooks/05_custom_scenario_playground.ipynb`  
+   User-defined custom scenarios.
+
+For paper-style synthetic outputs and the clearest overview, start with notebook `00`.
+
+# Typical practical workflow
+
+A common applied setting is:
+
+```text
+X = deployable features
+H = translated features = h(X)
+Y = downstream labels
+```
+
+TRACE then estimates:
+
+- paired learning curves from \(X\) and \(H\),
+- the Advantage Representation Curve (ARC),
+- compact summaries of low-label, late-label, and crossover behavior,
+- regime-oriented interpretation.
+
+At a high level, the workflow is:
+
+1. provide `X`, `H`, and `y`,
+2. specify a label-budget grid `n_grid`,
+3. fit and evaluate paired downstream models across repeated subsamples,
+4. inspect:
+   - learning curves,
+   - ARC,
+   - scalar summaries,
+   - regime-like behavior.
+
+Because the exposed API may evolve, the notebooks in `Notebooks/` should be treated as the primary runnable examples for this repository.
+
+# Example outputs
+
+TRACE is organized around three coordinated outputs:
+
+1. **paired learning curves**  
+   \(A_X(n)\) and \(A_H(n)\), typically with uncertainty bands,
+
+2. **ARC curve**  
+   \(\mathrm{ARC}(n)=A_H(n)-A_X(n)\),
+
+3. **compact summaries / regime scores**  
+   low-label advantage, late-regime behavior, and approximate crossover scale.
+
+These outputs support interpretations such as:
+
+- translation helps mainly when labels are scarce,
+- direct learning on \(X\) catches up with increasing label budget,
+- translated learning remains advantageous across scale,
+- translation is effectively neutral,
+- translation is lossy or misleading.
+
+# Synthetic scenarios in this repository
+
+The repository includes controlled reference scenarios illustrating the main ARC geometries:
+
+- **sample efficiency**
+- **persistent advantage**
+- **no advantage**
+- **lossy translation**
+
+These serve both as paper companions and as diagnostic templates for interpreting real studies.
+
+# Practical cautions
+
+A translated representation can appear useful for the wrong reasons. TRACE should therefore be interpreted together with careful evaluation design.
+
+Important concerns include:
+
+- **translator confounding**: translated features may encode site, stain, scanner, or acquisition artifacts;
+- **prior hallucination**: the translator may produce plausible but task-misaligned proxy structure;
+- **evaluation circularity**: downstream gains may be inflated by leakage or model selection on evaluation data.
+
+TRACE is therefore best used alongside:
+
+- strict train/validation/test separation,
+- frozen translator evaluation,
+- site- or batch-aware splits where relevant,
+- calibration against measured modalities when available.
+
+# Citation
+
+If you use TRACE in your work, please cite the associated manuscript:
+
+**Saisan, P., & Patel, S. P. (2026).**  
+*H\&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings.*  
+bioRxiv.
+
+## BibTeX
+
+```bibtex
+@article{saisan2026trace,
+  author  = {Saisan, Payam and Patel, Sandip Pravin},
+  title   = {H\&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings},
+  journal = {bioRxiv},
+  year    = {2026},
+  note    = {Preprint},
+  url     = {https://github.com/psaisan/TRACE}
+}
+```
+
+# License
+
+MIT License
