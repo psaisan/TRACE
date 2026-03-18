@@ -38,7 +38,7 @@ TRACE addresses this by analyzing **paired learning curves across label budgets*
 
 # Why TRACE is here now?
 
-Translated molecular intermediates like MISO and GigaTime are emerging as a potentially game changing **computational primitives** for biomarker modeling. TRACE is built for studying this setting: when a downstream target \(Y\) may be better predicted indirectly through a translated representation \(h(X)\) derived from \(X\) vs. directly from it's original deployable representation \(X\). 
+Timing of TRACE's development is tied to an emerging innovation in molecular data analytics. Translated molecular intermediates like MISO and GigaTime are emerging as a potentially game changing **computational primitive** for biomarker modeling. TRACE is built for studying this setting: when a downstream target \(Y\) may be better predicted indirectly through a translated representation \(h(X)\) derived from \(X\) vs. directly from it's original deployable representation \(X\). 
 
 In this view, a biomarker pipeline is organized as
  
