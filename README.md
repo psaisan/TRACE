@@ -126,27 +126,17 @@ The accompanying paper studies a specific distinction:
 
 If the translator \(\hat Z = h(X)\) is deterministic after paired-data training, then it cannot create new deployment-time information. Accordingly,
 
-$$
+```math
 I(Y;\hat Z) \le I(Y;X),
-$$
+```
 
 and, under the paper’s framing,
 
 
-$$
+```math
 \mathrm{AUC}^{*}(\hat{Z}) \le \mathrm{AUC}^{*}(X)
-$$
+```
 
- 
-$$
-\text{AUC}^*(\hat{Z}) \le \text{AUC}^*(X)
-$$
- 
-
-
-$$
-\mathrm{AUC}^*(\hat Z) \le \mathrm{AUC}^*(X).
-$$
 
 So whenever prediction from \(\hat Z\) exceeds prediction from \(X\) in practice, that gain must be interpreted as a **learnability effect**, not as creation of new deployment-time signal.
 
@@ -177,57 +167,6 @@ Y : downstream labels
 and want to answer:
 
 > Should I train on \(X\) or on \(h(X)\)?
-
----
-
-# Repository layout
-
-```text
-Examples/
-    Example1.ipynb
-    Example2.ipynb
-    run_linear_smoke.py
-    run_nonlinear_paper_sweeps.py
-    test.py
-
-Images/
-    Trace1.png
-    Trace2.png
-
-Notebooks/
-    00_overview_and_reference_scenarios.ipynb
-    01_sample_efficiency.ipynb
-    02_persistent_advantage.ipynb
-    03_no_advantage.ipynb
-    04_lossy_translation.ipynb
-    05_custom_scenario_playground.ipynb
-
-src/
-    __init__.py
-    config.py
-    linear.py
-    nonlinear.py
-    plotting.py
-    presets.py
-    summary.py
-    test.py
-    theory.py
-    utils.py
-
-trace/
-    __init__.py
-    api.py
-    diagnostics.py
-    presets.py
-    run_reference_scenarios.py
-    run_single_scenario.py
-    world.py
-
-README.md
-README2.md
-```
-
-The main user-facing entry path is the notebook sequence under `Notebooks/`.
 
 ---
 
@@ -350,7 +289,7 @@ ARC
 0.15 |\
      | \
 0.10 |  \
-     |   \
+     |   \https://github.com/psaisan/TRACE/tree/main
 0.05 |    \
      +-----\-----------
            label budget
@@ -392,110 +331,6 @@ These outputs support interpretations such as:
 - translated learning remains advantageous across scale;
 - translation is effectively neutral;
 - translation is lossy or misleading.
-
----
-
-# Minimal toy example
-
-The following toy setup illustrates the main logic of TRACE at a conceptual level:
-
-- a latent biological signal drives the label;
-- the deployable representation contains signal plus nuisance;
-- the translated representation suppresses some nuisance and is easier to learn from.
-
-```python
-import numpy as np
-
-N = 4000
-d = 30
-
-rng = np.random.default_rng(0)
-
-# latent biological signal
-z = rng.normal(size=(N, 1))
-
-# binary downstream label
-y = (z[:, 0] > 0).astype(int)
-
-# nuisance variation in the deployable representation
-nuisance = rng.normal(scale=2.0, size=(N, d))
-
-# deployable representation X
-X = z @ rng.normal(size=(1, d)) + nuisance + rng.normal(size=(N, d))
-
-# translated representation H = h(X)
-H = z @ rng.normal(size=(1, 8)) + 0.5 * rng.normal(size=(N, 8))
-```
-
-In this kind of setup, one often sees a **positive low-label ARC that shrinks with sample size**, illustrating the paper’s central regime: **finite-sample learnability gains under conserved information ceilings**.
-
-For runnable implementations and actual TRACE outputs, use the notebooks in `Notebooks/` and the scripts in `Examples/`.
-
----
-
-# Simulation framework in the paper
-
-The repository’s synthetic experiments follow the same logic as the manuscript.
-
-## 1. Sanity checks for deterministic translation
-
-The first stage verifies that a frozen deterministic translator obeys the data-processing inequality and does not raise the Bayes-optimal deployment ceiling.
-
-## 2. Linear-Gaussian benchmark
-
-The second stage studies an analytically controlled setting with:
-
-- low-dimensional biological signal;
-- structured nuisance;
-- Gaussian observation noise;
-- paired-data translator learning;
-- downstream comparison between raw \(X\) and translated \(\hat Z\).
-
-This benchmark supports DPI checks, ceiling comparisons, learning curves, fidelity sweeps, and nuisance-dependent phase behavior.
-
-## 3. Nonlinear latent-world benchmark
-
-The third stage moves beyond the linear regime:
-
-- labels arise from nonlinear latent biology;
-- the paired modality remains relatively aligned with task-relevant signal;
-- the deployable representation is higher-dimensional, nuisance-entangled, and more distorted.
-
-This creates the important regime in which \(\hat Z\) may be very useful at low label budgets while still being slightly lossy at large sample sizes.
-
-## 4. Robustness sweeps and scalar summaries
-
-The fourth stage evaluates robustness under structured nonlinear sweep families, including:
-
-- translator lossiness;
-- nuisance entanglement in \(X\);
-- paired-sample availability.
-
-These sweeps summarize resulting learning curves using quantities such as:
-
-- low-label gain;
-- crossover sample size;
-- tail-gap estimate.
-
----
-
-# Threat models and failure modes
-
-Apparent gains from translated intermediates do not automatically imply biology-aligned or deployment-relevant signal. TRACE therefore emphasizes explicit shortcut and failure-mode analysis.
-
-Main concerns include:
-
-- **translator confounding**: translated features encode site, stain, scanner, or acquisition artifacts;
-- **prior hallucination**: the translator produces plausible but misleading proxy structure;
-- **evaluation circularity**: downstream gains are inflated by leakage or hyperparameter selection on evaluation data.
-
-The paper and code therefore emphasize:
-
-- site-stratified evaluation;
-- frozen translator selection;
-- fidelity degradation tests;
-- separation of translator training from downstream label evaluation;
-- calibration against measured modalities when available.
 
 ---
 
