@@ -128,6 +128,11 @@ $$
 
 and, under the paper’s framing,
 
+
+$$
+\mathrm{AUC}^{*}(\hat{Z}) \le \mathrm{AUC}^{*}(X)
+$$
+
  
 $$
 \text{AUC}^*(\hat{Z}) \le \text{AUC}^*(X)
