@@ -19,7 +19,7 @@ TRACE implements the **Advantage Representation Curve (ARC)** introduced in the 
 
 TRACE is the official companion repository for the paper:
 
-**H&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings**  
+**Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings**  
 **Payam Saisan, Sandip Pravin Patel**  
 **bioRxiv** *(link coming soon)*
 
