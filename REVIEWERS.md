@@ -1,6 +1,8 @@
 # TRACE Figure 11 Reviewer Reproduction Packet:
 (Non public zip archive included for reviewers with via Journal Review)
 
+README Link: https://github.com/psaisan/TRACE/blob/main/REVIEWERS.md
+
 This packet reproduces the manuscript Figure 11 TRACE/ARC reference-regime panel from synthetic simulations only. No external data are required.
 
 The packet includes both a command-line script and a Jupyter notebook wrapper:
@@ -53,14 +55,6 @@ Expected outputs include:
 ```text
 figs/trace_reference_scenarios_summary.png
 figs/trace_reference_scenarios_summary.pdf
-figs/sample_efficiency_full_panel.png
-figs/sample_efficiency_full_panel.pdf
-figs/persistent_advantage_full_panel.png
-figs/persistent_advantage_full_panel.pdf
-figs/no_advantage_full_panel.png
-figs/no_advantage_full_panel.pdf
-figs/lossy_translation_full_panel.png
-figs/lossy_translation_full_panel.pdf
 figs/trace_reference_scenarios_metadata.json
 figs/trace_reference_frozen_seeds.json
 figs/trace_notebook_runtime.json        # notebook run only
