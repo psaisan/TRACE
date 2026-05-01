@@ -13,15 +13,36 @@
 
 An open-source diagnostic toolkit for determining when a translated representation \(h(X)\) provides downstream predictive advantage over the original deployable representation \(X\), as a function of label budget.
 
-TRACE implements the **Advantage Representation Curve (ARC)** introduced in the accompanying manuscript.
+TRACE implements the **Advantage Representation Curve (ARC)** introduced in the accompanying manuscript below.
 
 ---
 
-TRACE is the official companion repository for the paper:
+# Citation
 
-**Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings**  
-**Payam Saisan, Sandip Pravin Patel**  
-**bioRxiv** *(link coming soon)*
+If you use TRACE in your work, please cite the associated preprint:
+
+Saisan, P. A., & Patel, S. P. (2026). *Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings*. bioRxiv. https://doi.org/10.64898/2026.04.27.720188
+
+## BibTeX
+
+```bibtex
+@article{saisan2026moleculartranslators,
+  author  = {Saisan, Payam A. and Patel, Sandip Pravin},
+  title   = {Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings},
+  journal = {bioRxiv},
+  year    = {2026},
+  doi     = {10.64898/2026.04.27.720188},
+  note    = {Preprint},
+  url     = {https://doi.org/10.64898/2026.04.27.720188}
+}
+```
+---
+
+# License
+
+MIT License
+
+---
 
 TRACE serves two related purposes:
 
@@ -332,31 +353,6 @@ These outputs support interpretations such as:
 - translation is effectively neutral;
 - translation is lossy or misleading.
 
----
 
-# Citation
 
-If you use TRACE in your work, please cite the associated manuscript:
 
-**Saisan, P., & Patel, S. P. (2026).**  
-*H\&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings.*  
-bioRxiv.
-
-## BibTeX
-
-```bibtex
-@article{saisan2026trace,
-  author  = {Saisan, Payam and Patel, Sandip Pravin},
-  title   = {H\&E-to-Molecular Translators as a Computational Primitive for Biomarker Discovery: Learnability Gains Under Conserved Information Ceilings},
-  journal = {bioRxiv},
-  year    = {2026},
-  note    = {Preprint},
-  url     = {https://github.com/psaisan/TRACE}
-}
-```
-
----
-
-# License
-
-MIT License
